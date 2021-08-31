@@ -1,4 +1,4 @@
-import { CREATE_MOVIE, DELETE_MOVIE } from "./types";
+import { CREATE_MOVIE, DELETE_MOVIE,RETRIEVE_MOVIE } from "./types";
 
 import MovieDataService from "../services/movies.service";
 
@@ -22,18 +22,18 @@ export const createMovie =
     }
   };
 
-//   export const retrieveTutorials = () => async (dispatch) => {
-//     try {
-//       const res = await TutorialDataService.getAll();
+  export const retrieveMovie = () => async (dispatch) => {
+    try {
+      const res = await MovieDataService.getMovie();
 
-//       dispatch({
-//         type: RETRIEVE_TUTORIALS,
-//         payload: res.data,
-//       });
-//     } catch (err) {
-//       console.log(err);
-//     }
-//   };
+      dispatch({
+        type: RETRIEVE_MOVIE,
+        payload: res.data,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
 //   export const updateTutorial = (id, data) => async (dispatch) => {
 //     try {

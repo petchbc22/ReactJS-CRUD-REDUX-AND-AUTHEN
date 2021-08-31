@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connect, useDispatch } from "react-redux";
 import { createMovie } from "../actions/movie";
 import UserService from "../services/user.service";
+import RateDataService from "../services/rates.service";
 import EventBus from "../common/EventBus";
 
 const AddMovie = (props) => {
@@ -26,6 +27,15 @@ const AddMovie = (props) => {
         }
       }
     );
+    RateDataService.getRates().then(
+      (res) =>{
+        console.log(res)
+      }
+      ,
+      (error) => {
+          console.log(error)
+      }
+    )
   }, [props.history]);
 
   const onChangeMovieTitle = (e) => {

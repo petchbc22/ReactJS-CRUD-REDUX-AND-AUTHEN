@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, {  useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { imgDefaultScreen } from "../helpers/fncHelper";
-import MovieService from "../services/movies.service";
-import EventBus from "../common/EventBus";
-import { deleteMovie } from "../actions/movie";
+import { retrieveMovie,deleteMovie } from "../actions/movie";
 import {
   Card,
   CardImg,
@@ -16,37 +14,18 @@ import {
 } from "reactstrap";
 import { Edit, Trash } from "react-feather";
 
-const Profile = (props) => {
+
+const Profile = () => {
+  const { user: currentUser } = useSelector((state) => state.auth) // object;
+  const movies = useSelector(state => state.movies); // array
+  // const movies = useSelector(state => state.movie);
   const dispatch = useDispatch();
-  const [content, setContent] = useState("");
-
-  const freshData = () => {
-    MovieService.getMovie().then(
-      (response) => {
-        setContent(response.data);
-      },
-      (error) => {
-        const _content =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-
-        setContent(_content);
-
-        if (error.response && error.response.status === 401) {
-          EventBus.dispatch("logout");
-        }
-      }
-    );
-  };
   useEffect(() => {
-    freshData();
-  }, []);
-  const { user: currentUser } = useSelector((state) => state.auth);
-
-  console.log(currentUser.roles);
+    dispatch(retrieveMovie());
+  }, [dispatch]);
+  console.log(movies)
+ 
+  // console.log(currentUser.roles);
   if (!currentUser) {
     return <Redirect to="/login" />;
   }
@@ -54,19 +33,19 @@ const Profile = (props) => {
     dispatch(deleteMovie(movieId))
       .then(() => {
         console.log("ส่งไป ลบ ");
-        freshData();
+        // freshData();
+        dispatch(retrieveMovie());
       })
       .catch(() => {
         console.log("err");
       });
     console.log(movieId);
   };
-  console.log(content);
   return (
     <div className="container">
       <div className="row">
-        {content
-          ? content.map((data, index) => {
+        {movies
+          ? movies.map((data, index) => {
               return (
                 <div className="col-md-3" key={index}>
                   <Card>
@@ -135,5 +114,7 @@ const Profile = (props) => {
     </div>
   );
 };
+
+
 
 export default Profile;
