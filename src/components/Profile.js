@@ -1,8 +1,9 @@
-import React, {  useEffect } from "react";
-import { Redirect } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Redirect, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { imgDefaultScreen } from "../helpers/fncHelper";
-import { retrieveMovie,deleteMovie } from "../actions/movie";
+import { retrieveMovie, deleteMovie } from "../actions/movie";
+
 import {
   Card,
   CardImg,
@@ -14,17 +15,16 @@ import {
 } from "reactstrap";
 import { Edit, Trash } from "react-feather";
 
-
 const Profile = () => {
-  const { user: currentUser } = useSelector((state) => state.auth) // object;
-  const movies = useSelector(state => state.movies); // array
+  const { user: currentUser } = useSelector((state) => state.auth); // object;
+  const movies = useSelector((state) => state.movies); // array
   // const movies = useSelector(state => state.movie);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(retrieveMovie());
   }, [dispatch]);
-  console.log(movies)
- 
+  console.log(movies);
+
   // console.log(currentUser.roles);
   if (!currentUser) {
     return <Redirect to="/login" />;
@@ -63,13 +63,22 @@ const Profile = () => {
                       </CardSubtitle>
                       <CardText></CardText>
                       <div className="d-flex justify-content-end">
-                      {currentUser.roles.includes("ROLE_ADMIN") || currentUser.roles.includes("ROLE_TEAMLEADER") ? (
-                        <div className="mr-2">
-                          <Button color={"warning"}>
-                            <Edit color="white" size={18} />
-                          </Button>
-                        </div>
-                         ) : null}
+                        {currentUser.roles.includes("ROLE_ADMIN") ||
+                        currentUser.roles.includes("ROLE_TEAMLEADER") ? (
+                          <div className="mr-2">
+                            <Button color={"warning"}>
+                            <Link
+                              to={{
+                                pathname: `/addmovie/${data.movieId}`,
+                                state: true,
+                              }}
+                              className="text-white text-bold"
+                            >
+                              <Edit color="white" size={18} />
+                            </Link>
+                            </Button>
+                          </div>
+                        ) : null}
                         {currentUser.roles.includes("ROLE_ADMIN") ? (
                           <div>
                             <Button
@@ -114,7 +123,5 @@ const Profile = () => {
     </div>
   );
 };
-
-
 
 export default Profile;

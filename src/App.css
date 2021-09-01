@@ -30,3 +30,15 @@ label {
   -webkit-border-radius: 50%;
   border-radius: 50%;
 }
+
+.Toastify__toast {
+  box-shadow: 0 0 13px 14px rgb(0 0 0 / 10%), 0 2px 15px 0 rgb(0 0 0 / 20%) !important;
+}
+.select-err{
+  border: 1px solid #dc3545 !important;
+  border-radius: .25rem !important;
+}
+.image-fit{
+  max-height: 300px;
+  width: auto;
+}

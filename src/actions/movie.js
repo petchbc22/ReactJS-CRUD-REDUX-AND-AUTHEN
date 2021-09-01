@@ -1,14 +1,17 @@
 import { CREATE_MOVIE, DELETE_MOVIE,RETRIEVE_MOVIE } from "./types";
-
 import MovieDataService from "../services/movies.service";
-
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../App.css'
+toast.configure()
 export const createMovie =
-  (movieName, yearReleased, pathIMG) => async (dispatch) => {
+  (movieName, yearReleased, pathIMG,rates) => async (dispatch) => {
     try {
       const res = await MovieDataService.createMovie({
         movieName,
         yearReleased,
         pathIMG,
+        rates
       });
 
       dispatch({
@@ -31,6 +34,11 @@ export const createMovie =
         payload: res.data,
       });
     } catch (err) {
+      toast.error("Error Network.", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
       console.log(err);
     }
   };

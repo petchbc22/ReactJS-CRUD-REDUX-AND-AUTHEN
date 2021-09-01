@@ -1,25 +1,60 @@
 import React, { useState, useEffect } from "react";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { createMovie } from "../actions/movie";
 import UserService from "../services/user.service";
-import RateDataService from "../services/rates.service";
 import EventBus from "../common/EventBus";
+import { retrieveRate } from "../actions/rate";
+import Select from "react-select";
+import { useForm, Controller, useWatch } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Row, Col, Input } from "reactstrap";
+import { imgDefaultScreen } from "../helpers/fncHelper";
+import "../App.css";
+import { useParams } from "react-router-dom";
+
+const validateSchema = yup.object().shape({
+  movieTitle: yup.string("movie title is required.").required(),
+  yearReleased: yup.number().required().typeError("you must specify a number."),
+  ratingMovie: yup
+    .array()
+    .min(1, "Pick at least 1 tags")
+    .of(
+      yup.object().shape({
+        label: yup.string().required(),
+        value: yup.string().required(),
+      })
+    )
+    .required()
+    .nullable(),
+});
 
 const AddMovie = (props) => {
-  console.log(props);
-  const [movieTitle, setMovieTitle] = useState("");
-  const [yearReleased, setYearReleased] = useState("");
-  const [pathIMG, setPathIMG] = useState("");
+  let { movieId } = useParams();
+  console.log(movieId)
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    resolver: yupResolver(validateSchema),
+    mode: "onSubmit",
+  });
   const dispatch = useDispatch();
+  const rates = useSelector((state) => state.rates); // array
+
+  const [rateOptions, setRateOptions] = useState([]);
+  const [imgPreview, setImgPreview] = useState("");
+  let rateId = useWatch({ control, name: "ratingMovie" });
 
   useEffect(() => {
     UserService.getAdminBoard().then(
       (response) => {
-        console.log(response);
-        alert("หน้าของ admin");
+        dispatch(retrieveRate());
       },
       (error) => {
-        alert("หน้าของ admin คุณไม่มีสิทธ์");
+        // alert("หน้าของ admin คุณไม่มีสิทธ์");
         props.history.push("/profile");
 
         if (error.response && error.response.status === 401) {
@@ -27,89 +62,167 @@ const AddMovie = (props) => {
         }
       }
     );
-    RateDataService.getRates().then(
-      (res) =>{
-        console.log(res)
-      }
-      ,
-      (error) => {
-          console.log(error)
-      }
-    )
-  }, [props.history]);
+  }, [props.history, dispatch]);
 
-  const onChangeMovieTitle = (e) => {
-    setMovieTitle(e.target.value);
-  };
+  useEffect(() => {
+    console.log(rates);
+    let rateData = rates.map((data) => {
+      return {
+        value: data.rateId,
+        label: data.rate,
+      };
+    });
+    setRateOptions(rateData);
+  }, [rates]);
 
-  const onChangeYearReleased = (e) => {
-    setYearReleased(e.target.value);
-  };
+  // const onChangePathIMG = (e) => {
+  //   setPathIMG(e.target.value);
+  // };
 
-  const onChangePathIMG = (e) => {
-    setPathIMG(e.target.value);
-  };
+  // const saveMovie = () => {
+  //   dispatch(createMovie(movieTitle, yearReleased, pathIMG))
+  //     .then(() => {
+  //       console.log("ส่งไป save ");
+  //       props.history.push("/profile");
+  //     })
+  //     .catch(() => {
+  //       console.log("err");
+  //     });
+  // };
 
-  const saveMovie = () => {
-    dispatch(createMovie(movieTitle, yearReleased, pathIMG))
-      .then(() => {
-        console.log("ส่งไป save ");
-        props.history.push("/profile");
-      })
-      .catch(() => {
-        console.log("err");
+  const submitForm = (input) => {
+    if (input !== "") {
+      let getRateId = rateId.map((data) => {
+        return data.value;
       });
+      dispatch(createMovie(input.movieTitle, input.yearReleased, input.pathIMG,getRateId))
+        .then(() => {
+          console.log("ส่งไป save ");
+          props.history.push("/profile");
+        })
+        .catch(() => {
+          console.log("err");
+        });
+    }
   };
-
-
 
   return (
-    <div className="submit-form">
-      <div>
-        <div className="form-group">
-          <label htmlFor="title">Movie Title</label>
-          <input
-            type="text"
-            className="form-control"
-            id="movieTitle"
-            required
-            value={movieTitle}
-            onChange={onChangeMovieTitle}
-            name="movieTitle"
-          />
-        </div>
+    <form className="submit-form">
+      {movieId}
+      <Row>
+        <Col md={4}>
+          <div className="text-center">
+            <img
+              className="image-fit pt-3"
+              onError={imgDefaultScreen}
+              src={imgPreview}
+              alt="Card-movie-img"
+            />
+          </div>
+        </Col>
+        <Col md={8}>
+          <div className="form-group">
+            <label htmlFor="title">Movie Title</label>
+            <Controller
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="Movie Title"
+                  className={`${errors.movieTitle && "is-invalid"} `}
+                />
+              )}
+              name="movieTitle"
+              control={control}
+              defaultValue=""
+            />
+            {errors.movieTitle?.message && (
+              <p className="text-left text-danger">
+                {errors.movieTitle?.message}
+              </p>
+            )}
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="yearReleased">Year Released</label>
-          <input
-            type="text"
-            className="form-control"
-            id="yearReleased"
-            required
-            value={yearReleased}
-            onChange={onChangeYearReleased}
-            name="yearReleased"
-          />
-        </div>
+          <div className="form-group">
+            <label htmlFor="yearReleased">Year Released</label>
+            <Controller
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  maxLength={4}
+                  placeholder="Year Released"
+                  className={`${errors.yearReleased && "is-invalid"} `}
+                />
+              )}
+              name="yearReleased"
+              maxLength={4}
+              control={control}
+              defaultValue=""
+            />
+            {errors.yearReleased?.message && (
+              <p className="text-left text-danger">
+                {errors.yearReleased?.message}
+              </p>
+            )}
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="pathIMG">Path IMG</label>
-          <input
-            type="text"
-            className="form-control"
-            id="pathIMG"
-            required
-            value={pathIMG}
-            onChange={onChangePathIMG}
-            name="pathIMG"
-          />
-        </div>
+          <div className="form-group">
+            <label htmlFor="pathIMG">Path IMG</label>
+            <Controller
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="pathIMG"
+                  onChange={(e) => {
+                    try {
+                      setImgPreview(e.target.value);
+                      setValue("pathIMG", e.target.value);
+                    } catch (e) {
+                      console.log("error: ", e);
+                    }
+                  }}
+                />
+              )}
+              name="pathIMG"
+              control={control}
+              defaultValue=""
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="pathIMG">Rating</label>
+            <Controller
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  placeholder="rating Movie"
+                  className={`${
+                    errors.ratingMovie && "select-err is-invalid React"
+                  } `}
+                  options={rateOptions}
+                  isMulti
+                />
+              )}
+              name="ratingMovie"
+              control={control}
+              defaultValue=""
+            />
 
-        <button onClick={saveMovie} className="btn btn-success">
-          Submit
-        </button>
-      </div>
-    </div>
+            {errors.ratingMovie?.message && (
+              <p className="text-left text-danger">
+                {errors.ratingMovie?.message}
+              </p>
+            )}
+          </div>
+        </Col>
+        <div className="text-center">
+          <button
+            onClick={handleSubmit(submitForm)}
+            className="btn btn-success"
+          >
+            Submit
+          </button>
+        </div>
+      </Row>
+    </form>
   );
 };
 
