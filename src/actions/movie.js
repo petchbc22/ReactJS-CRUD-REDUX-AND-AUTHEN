@@ -34,13 +34,20 @@ export const createMovie =
         payload: res.data,
       });
     } catch (err) {
-      toast.error("Error Network.", {
-        position: toast.POSITION.BOTTOM_RIGHT,
-        autoClose: 3000,
-        hideProgressBar: true,
-      });
-      console.log(err);
-    }
+      if(err.response.status === 401){
+        console.log('redirect login')
+        return Promise.reject(err.response.status);
+      }
+      else{
+        console.log(err)
+        toast.error("Error Network.", {
+          position: toast.POSITION.BOTTOM_RIGHT,
+          autoClose: 3000,
+          hideProgressBar: true,
+        });
+      }
+     
+    } 
   };
 
 //   export const updateTutorial = (id, data) => async (dispatch) => {

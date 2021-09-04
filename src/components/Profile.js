@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect /**useState**/ } from "react";
 import { Redirect, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { imgDefaultScreen } from "../helpers/fncHelper";
+import UserService from "../services/user.service";
 import { retrieveMovie, deleteMovie } from "../actions/movie";
-
+// import SweetAlert from "react-bootstrap-sweetalert";
 import {
   Card,
   CardImg,
@@ -12,18 +13,31 @@ import {
   CardTitle,
   CardSubtitle,
   Button,
+  Badge,
 } from "reactstrap";
 import { Edit, Trash } from "react-feather";
+import EventBus from "../common/EventBus";
 
 const Profile = () => {
+  // const [showAlert, setShowAlert] = useState(false);
   const { user: currentUser } = useSelector((state) => state.auth); // object;
   const movies = useSelector((state) => state.movies); // array
   // const movies = useSelector(state => state.movie);
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(retrieveMovie());
+    UserService.getAdminBoard().then(
+      (response) => {
+        if (response.status === 200) {
+          dispatch(retrieveMovie());
+        }
+      },
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          EventBus.dispatch("logout");
+        }
+      }
+    );
   }, [dispatch]);
-  console.log(movies);
 
   // console.log(currentUser.roles);
   if (!currentUser) {
@@ -36,11 +50,12 @@ const Profile = () => {
         // freshData();
         dispatch(retrieveMovie());
       })
-      .catch(() => {
-        console.log("err");
+      .catch((res) => {
+        console.log(res);
       });
     console.log(movieId);
   };
+  console.log(movies);
   return (
     <div className="container">
       <div className="row">
@@ -61,21 +76,36 @@ const Profile = () => {
                       <CardSubtitle tag="h6" className="mb-2 text-muted">
                         Year Released : {data.yearReleased}
                       </CardSubtitle>
-                      <CardText></CardText>
+                      <CardText>
+                        rates :{" "}
+                        {data.rates
+                          ? data.rates.map((data, index) => {
+                              return (
+                                <Badge
+                                  color="primary"
+                                  className="mr-1"
+                                  key={index}
+                                >
+                                  {data.rate}
+                                </Badge>
+                              );
+                            })
+                          : null}
+                      </CardText>
                       <div className="d-flex justify-content-end">
                         {currentUser.roles.includes("ROLE_ADMIN") ||
                         currentUser.roles.includes("ROLE_TEAMLEADER") ? (
                           <div className="mr-2">
                             <Button color={"warning"}>
-                            <Link
-                              to={{
-                                pathname: `/addmovie/${data.movieId}`,
-                                state: true,
-                              }}
-                              className="text-white text-bold"
-                            >
-                              <Edit color="white" size={18} />
-                            </Link>
+                              <Link
+                                to={{
+                                  pathname: `/addmovie/${data.movieId}`,
+                                  state: true,
+                                }}
+                                className="text-white text-bold"
+                              >
+                                <Edit color="white" size={18} />
+                              </Link>
                             </Button>
                           </div>
                         ) : null}
@@ -99,27 +129,13 @@ const Profile = () => {
             })
           : null}
       </div>
-
-      {/* <header className="jumbotron">
-        <h3>
-          <strong>{currentUser.username}</strong> Profile
-        </h3>
-      </header>
-      <p>
-        <strong>Token:</strong> {currentUser.accessToken.substring(0, 20)} ...{" "}
-        {currentUser.accessToken.substr(currentUser.accessToken.length - 20)}
-      </p>
-      <p>
-        <strong>Id:</strong> {currentUser.id}
-      </p>
-      <p>
-        <strong>Email:</strong> {currentUser.email}
-      </p>
-      <strong>Authorities:</strong>
-      <ul>
-        {currentUser.roles &&
-          currentUser.roles.map((role, index) => <li key={index}>{role}</li>)}
-      </ul> */}
+      {/* <SweetAlert
+        title={"comfirm delete"}
+        warning
+        show={showAlert}
+        confirmBtnText="Close"
+      
+      ></SweetAlert> */}
     </div>
   );
 };

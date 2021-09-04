@@ -15,3 +15,7 @@ export const UPDATE_MOVIE = "UPDATE_MOVIE";
 export const DELETE_MOVIE = "DELETE_MOVIE";
 
 export const RETRIEVE_RATE = "RETRIEVE_RATE";
+
+
+export const ADD_ALERT = 'ADD_ALERT';
+export const REMOVE_ALERT = 'REMOVE_ALERT';

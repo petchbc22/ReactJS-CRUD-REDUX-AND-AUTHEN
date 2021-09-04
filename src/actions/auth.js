@@ -74,7 +74,7 @@ export const login = (username, password) => (dispatch) => {
 
       return Promise.reject();
     }
-  );
+  )
 };
 
 export const logout = () => (dispatch) => {

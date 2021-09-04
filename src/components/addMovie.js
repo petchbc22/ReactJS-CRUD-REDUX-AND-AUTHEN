@@ -31,7 +31,7 @@ const validateSchema = yup.object().shape({
 
 const AddMovie = (props) => {
   let { movieId } = useParams();
-  console.log(movieId)
+  console.log(movieId);
   const {
     handleSubmit,
     control,
@@ -51,6 +51,7 @@ const AddMovie = (props) => {
   useEffect(() => {
     UserService.getAdminBoard().then(
       (response) => {
+        console.log(response);
         dispatch(retrieveRate());
       },
       (error) => {
@@ -95,7 +96,14 @@ const AddMovie = (props) => {
       let getRateId = rateId.map((data) => {
         return data.value;
       });
-      dispatch(createMovie(input.movieTitle, input.yearReleased, input.pathIMG,getRateId))
+      dispatch(
+        createMovie(
+          input.movieTitle,
+          input.yearReleased,
+          input.pathIMG,
+          getRateId
+        )
+      )
         .then(() => {
           console.log("ส่งไป save ");
           props.history.push("/profile");
@@ -213,14 +221,14 @@ const AddMovie = (props) => {
             )}
           </div>
         </Col>
-        <div className="text-center">
+        <Col md={12} className="text-center">
           <button
             onClick={handleSubmit(submitForm)}
             className="btn btn-success"
           >
             Submit
           </button>
-        </div>
+        </Col>
       </Row>
     </form>
   );
