@@ -1,10 +1,9 @@
-import React, { useEffect /**useState**/ } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { imgDefaultScreen } from "../helpers/fncHelper";
 import UserService from "../services/user.service";
 import { retrieveMovie, deleteMovie } from "../actions/movie";
-// import SweetAlert from "react-bootstrap-sweetalert";
 import {
   Card,
   CardImg,
@@ -17,11 +16,15 @@ import {
 } from "reactstrap";
 import { Edit, Trash } from "react-feather";
 import EventBus from "../common/EventBus";
-
+import { Alert } from "../components/Alert";
 const Profile = () => {
-  // const [showAlert, setShowAlert] = useState(false);
   const { user: currentUser } = useSelector((state) => state.auth); // object;
   const movies = useSelector((state) => state.movies); // array
+  const [successAlert, setSuccessAlert] = useState(false);
+  const [textAlert, setTextAlert] = useState("");
+  const [confrimAlert, setConfrimAlert] = useState(false);
+  const [movieIdDelete, setMovieIdDelete] = useState(0);
+
   // const movies = useSelector(state => state.movie);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -44,16 +47,16 @@ const Profile = () => {
     return <Redirect to="/login" />;
   }
   const deleteMoviebyID = (movieId) => {
-    dispatch(deleteMovie(movieId))
-      .then(() => {
-        console.log("ส่งไป ลบ ");
-        // freshData();
-        dispatch(retrieveMovie());
-      })
-      .catch((res) => {
-        console.log(res);
-      });
-    console.log(movieId);
+    // dispatch(deleteMovie(movieId))
+    //   .then(() => {
+    //     console.log("ส่งไป ลบ ");
+    //     // freshData();
+    //     dispatch(retrieveMovie());
+    //   })
+    //   .catch((res) => {
+    //     console.log(res);
+    //   });
+    // console.log(movieId);
   };
   console.log(movies);
   return (
@@ -114,7 +117,10 @@ const Profile = () => {
                             <Button
                               color={"danger"}
                               onClick={() => {
-                                deleteMoviebyID(data.movieId);
+                                setTextAlert("error")
+                                setMovieIdDelete(data.movieId)
+                                setConfrimAlert(true)
+                                // deleteMoviebyID(data.movieId);
                               }}
                             >
                               <Trash color="white" size={18} />
@@ -129,13 +135,25 @@ const Profile = () => {
             })
           : null}
       </div>
-      {/* <SweetAlert
-        title={"comfirm delete"}
-        warning
-        show={showAlert}
-        confirmBtnText="Close"
-      
-      ></SweetAlert> */}
+      <Alert
+        showAlert={confrimAlert}
+        typeAlert={"delete"}
+        id={movieIdDelete}
+        nextFnc={() => {
+          deleteMoviebyID();
+        }}
+        closeFnc={() => {
+          setConfrimAlert(false);
+        }}
+      />
+      <Alert
+        propstitle={textAlert}
+        showAlert={successAlert}
+        typeAlert={"success"}
+        closeFnc={() => {
+          setSuccessAlert(false);
+        }}
+      />
     </div>
   );
 };
