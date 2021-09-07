@@ -42,3 +42,9 @@ label {
   max-height: 300px;
   width: auto;
 }
+.font-monospace{
+  font-family: monospace;
+}
+.font-1_375em{
+  font-size:1.375em !important;
+}

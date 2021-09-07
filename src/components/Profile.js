@@ -21,7 +21,6 @@ const Profile = () => {
   const { user: currentUser } = useSelector((state) => state.auth); // object;
   const movies = useSelector((state) => state.movies); // array
   const [successAlert, setSuccessAlert] = useState(false);
-  const [textAlert, setTextAlert] = useState("");
   const [confrimAlert, setConfrimAlert] = useState(false);
   const [movieIdDelete, setMovieIdDelete] = useState(0);
 
@@ -46,17 +45,18 @@ const Profile = () => {
   if (!currentUser) {
     return <Redirect to="/login" />;
   }
-  const deleteMoviebyID = (movieId) => {
-    // dispatch(deleteMovie(movieId))
-    //   .then(() => {
-    //     console.log("ส่งไป ลบ ");
-    //     // freshData();
-    //     dispatch(retrieveMovie());
-    //   })
-    //   .catch((res) => {
-    //     console.log(res);
-    //   });
-    // console.log(movieId);
+  const deleteMoviebyID = () => {
+    dispatch(deleteMovie(movieIdDelete))
+      .then(() => {
+        console.log("ส่งไป ลบ");
+        setSuccessAlert(true);
+        // freshData();
+        dispatch(retrieveMovie());
+      })
+      .catch((res) => {
+        console.log(res);
+      });
+   
   };
   console.log(movies);
   return (
@@ -117,9 +117,8 @@ const Profile = () => {
                             <Button
                               color={"danger"}
                               onClick={() => {
-                                setTextAlert("error")
-                                setMovieIdDelete(data.movieId)
-                                setConfrimAlert(true)
+                                setMovieIdDelete(data.movieId);
+                                setConfrimAlert(true);
                                 // deleteMoviebyID(data.movieId);
                               }}
                             >
@@ -147,7 +146,6 @@ const Profile = () => {
         }}
       />
       <Alert
-        propstitle={textAlert}
         showAlert={successAlert}
         typeAlert={"success"}
         closeFnc={() => {

@@ -92,7 +92,7 @@ const Register = () => {
         });
     }
   };
-
+  console.log('message----',message)
   return (
     <div className="col-md-12">
       <div className="card card-container">

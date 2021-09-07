@@ -11,8 +11,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Row, Col, Input } from "reactstrap";
 import { imgDefaultScreen } from "../helpers/fncHelper";
 import "../App.css";
-import { useParams } from "react-router-dom";
 
+import { Alert } from "../components/Alert";
 const validateSchema = yup.object().shape({
   movieTitle: yup.string("movie title is required.").required(),
   yearReleased: yup.number().required().typeError("you must specify a number."),
@@ -30,8 +30,6 @@ const validateSchema = yup.object().shape({
 });
 
 const AddMovie = (props) => {
-  let { movieId } = useParams();
-  console.log(movieId);
   const {
     handleSubmit,
     control,
@@ -43,9 +41,16 @@ const AddMovie = (props) => {
   });
   const dispatch = useDispatch();
   const rates = useSelector((state) => state.rates); // array
-
+  const [successAlert, setSuccessAlert] = useState(false);
+  const [confrimAlert, setConfrimAlert] = useState(false);
   const [rateOptions, setRateOptions] = useState([]);
   const [imgPreview, setImgPreview] = useState("");
+  const [dataCreate, setDataCreate] = useState({
+    movieTitle: "",
+    yearReleased: "",
+    pathIMG: "",
+    getRateId: [],
+  });
   let rateId = useWatch({ control, name: "ratingMovie" });
 
   useEffect(() => {
@@ -93,30 +98,39 @@ const AddMovie = (props) => {
 
   const submitForm = (input) => {
     if (input !== "") {
+      setConfrimAlert(true);
       let getRateId = rateId.map((data) => {
         return data.value;
       });
-      dispatch(
-        createMovie(
-          input.movieTitle,
-          input.yearReleased,
-          input.pathIMG,
-          getRateId
-        )
-      )
-        .then(() => {
-          console.log("ส่งไป save ");
-          props.history.push("/profile");
-        })
-        .catch(() => {
-          console.log("err");
-        });
+      let data = {
+        movieTitle: input.movieTitle,
+        yearReleased: input.yearReleased,
+        pathIMG: input.pathIMG,
+        getRateId: getRateId,
+      };
+      setDataCreate(data);
     }
   };
-
+  const fncCreateMovie = () => {
+    dispatch(
+      createMovie(
+        dataCreate.movieTitle,
+        dataCreate.yearReleased,
+        dataCreate.pathIMG,
+        dataCreate.getRateId
+      )
+    )
+      .then(() => {
+        setSuccessAlert(true);
+        console.log("ส่งไป save ");
+      })
+      .catch(() => {
+        console.log("err");
+      });
+  };
+  console.log(dataCreate);
   return (
     <form className="submit-form">
-      {movieId}
       <Row>
         <Col md={4}>
           <div className="text-center">
@@ -230,6 +244,25 @@ const AddMovie = (props) => {
           </button>
         </Col>
       </Row>
+      <Alert
+        showAlert={confrimAlert}
+        typeAlert={"create"}
+        // id={movieIdDelete}
+        nextFnc={() => {
+          fncCreateMovie();
+        }}
+        closeFnc={() => {
+          setConfrimAlert(false);
+        }}
+      />
+      <Alert
+        showAlert={successAlert}
+        typeAlert={"success"}
+        closeFnc={() => {
+          setSuccessAlert(false);
+          props.history.push("/profile");
+        }}
+      />
     </form>
   );
 };
