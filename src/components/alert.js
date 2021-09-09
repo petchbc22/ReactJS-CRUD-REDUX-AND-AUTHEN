@@ -108,7 +108,7 @@ export const Alert = (props) => {
               title={'Success'}
               success
               show={props.showAlert}
-              confirmBtnText="ปิด"
+              confirmBtnText="Close"
               confirmBtnCssClass="custombtinmodal"
               onConfirm={() => {
                 props.closeFnc()
@@ -125,7 +125,7 @@ export const Alert = (props) => {
               title={props.propstitle}
               error
               show={props.showAlert}
-              confirmBtnText="ปิด"
+              confirmBtnText="Close"
               confirmBtnCssClass="custombtinmodal"
               onConfirm={() => {
                 props.closeFnc()

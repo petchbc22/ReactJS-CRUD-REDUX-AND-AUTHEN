@@ -1,4 +1,4 @@
-import { CREATE_MOVIE, DELETE_MOVIE,RETRIEVE_MOVIE } from "./types";
+import { CREATE_MOVIE, DELETE_MOVIE,RETRIEVE_MOVIE, UPDATE_MOVIE,FIND_MOVIE_BY_ID } from "./types";
 import MovieDataService from "../services/movies.service";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -35,7 +35,6 @@ export const createMovie =
       });
     } catch (err) {
       if(err.response.status === 401){
-        console.log('redirect login')
         return Promise.reject(err.response.status);
       }
       else{
@@ -50,20 +49,21 @@ export const createMovie =
     } 
   };
 
-//   export const updateTutorial = (id, data) => async (dispatch) => {
-//     try {
-//       const res = await TutorialDataService.update(id, data);
+  export const updateMovie = (movieId, data) => async (dispatch) => {
+    try {
+      const res = await MovieDataService.updateMovie(movieId, data);
 
-//       dispatch({
-//         type: UPDATE_TUTORIAL,
-//         payload: data,
-//       });
+      dispatch({
+        type: UPDATE_MOVIE,
+        payload: { movie: res.data },
+        
+      });
 
-//       return Promise.resolve(res.data);
-//     } catch (err) {
-//       return Promise.reject(err);
-//     }
-//   };
+      return Promise.resolve(res.data);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  };
 
 export const deleteMovie = (movieId) => async (dispatch) => {
   try {
@@ -78,30 +78,34 @@ export const deleteMovie = (movieId) => async (dispatch) => {
   }
 };
 
-//   export const deleteAllTutorials = () => async (dispatch) => {
-//     try {
-//       const res = await TutorialDataService.deleteAll();
+  // export const aa = (MovieId) => async (dispatch) => {
+  //   try {
+  //     const res = await MovieDataService.findMovieByid(MovieId);
 
-//       dispatch({
-//         type: DELETE_ALL_TUTORIALS,
-//         payload: res.data,
-//       });
+  //     dispatch({
+  //       type: FIND_MOVIE_BY_ID,
+  //       payload: res.data,
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
-//       return Promise.resolve(res.data);
-//     } catch (err) {
-//       return Promise.reject(err);
-//     }
-//   };
-
-//   export const findTutorialsByTitle = (title) => async (dispatch) => {
-//     try {
-//       const res = await TutorialDataService.findByTitle(title);
-
-//       dispatch({
-//         type: RETRIEVE_TUTORIALS,
-//         payload: res.data,
-//       });
-//     } catch (err) {
-//       console.log(err);
-//     }
-//   };
+  export const findOneMovie = (MovieId) => (dispatch) => {
+    return MovieDataService.findMovieByid(MovieId).then(
+      (data) => {
+        dispatch({
+          type: FIND_MOVIE_BY_ID,
+          payload:{ movie: data },
+        });
+  
+        return Promise.resolve();
+      },
+      (error) => {
+        console.log(error)
+      }
+    )
+  };
+  
+ 
+  

@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { createMovie } from "../actions/movie";
+import { useParams } from "react-router-dom";
+import { updateMovie, findOneMovie } from "../actions/movie";
 import UserService from "../services/user.service";
 import EventBus from "../common/EventBus";
 import { retrieveRate } from "../actions/rate";
 import Select from "react-select";
-import { useForm, Controller, useWatch } from "react-hook-form";
+import { useForm, Controller ,useWatch } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Row, Col, Input } from "reactstrap";
 import { imgDefaultScreen } from "../helpers/fncHelper";
 import "../App.css";
-
 import { Alert } from "../components/Alert";
+
+//----------------------------------- Yup config Validation -------------------------------------------------
 const validateSchema = yup.object().shape({
   movieTitle: yup.string("movie title is required.").required(),
   yearReleased: yup.number().required().typeError("you must specify a number."),
@@ -29,7 +31,9 @@ const validateSchema = yup.object().shape({
     .nullable(),
 });
 
-const AddMovie = (props) => {
+const EditMovie = (props) => {
+  //----------------------------------- STATE AND CONST -------------------------------------------------
+  let { movieId } = useParams(); // useParams :movieId
   const {
     handleSubmit,
     control,
@@ -40,35 +44,34 @@ const AddMovie = (props) => {
     mode: "onSubmit",
   });
   const dispatch = useDispatch();
-  const rates = useSelector((state) => state.rates); // array
+    // -- state form store -- 
+  const rates = useSelector((state) => state.rates); 
+  const { movie: currentMovie } = useSelector((state) => state.movies);
+
   const [successAlert, setSuccessAlert] = useState(false);
   const [confrimAlert, setConfrimAlert] = useState(false);
   const [rateOptions, setRateOptions] = useState([]);
   const [imgPreview, setImgPreview] = useState("");
-  const [dataCreate, setDataCreate] = useState({
-    movieTitle: "",
-    yearReleased: "",
-    pathIMG: "",
-    getRateId: [],
-  });
-  let rateId = useWatch({ control, name: "ratingMovie" });
+  const [dataEdit, setDataEdit] = useState({});
+  let rateId = useWatch({ control, name: "ratingMovie" }); // getValue form Select
 
+  //----------------------------------- USEEFFECT -------------------------------------------------
+  // get Role 
   useEffect(() => {
     UserService.getAdminBoard().then(
       (response) => {
         dispatch(retrieveRate());
+        dispatch(findOneMovie(movieId));
       },
       (error) => {
-        // alert("หน้าของ admin คุณไม่มีสิทธ์");
         props.history.push("/profile");
-
         if (error.response && error.response.status === 401) {
           EventBus.dispatch("logout");
         }
       }
     );
-  }, [props.history, dispatch]);
-
+  }, [props.history, dispatch, movieId]);
+ // get Rate to Option Select 
   useEffect(() => {
     let rateData = rates.map((data) => {
       return {
@@ -77,8 +80,29 @@ const AddMovie = (props) => {
       };
     });
     setRateOptions(rateData);
-  }, [rates]);
+  }, [movieId, rates]);
+// get Movie with params and setValue
+  useEffect(() => {
+    if (currentMovie) {
+        if(currentMovie.data){
+            setImgPreview(currentMovie.data.pathIMG ? currentMovie.data.pathIMG : null);
+            let rateMovie = currentMovie.data.rates.length ?  currentMovie.data.rates.map((data) => {
+              return {
+                value: data.rateId,
+                label: data.rate,
+              };
+            })
+          : [];
+            setValue("movieTitle", currentMovie.data.movieName);
+            setValue("yearReleased", currentMovie.data.yearReleased);
+            setValue("pathIMG", currentMovie.data.pathIMG);
+            setValue("ratingMovie", rateMovie);
+        }
+   
+    }
+  }, [currentMovie, setValue]);
 
+  //----------------------------------- FNC ALL -------------------------------------------------
   const submitForm = (input) => {
     if (input !== "") {
       setConfrimAlert(true);
@@ -86,30 +110,24 @@ const AddMovie = (props) => {
         return data.value;
       });
       let data = {
-        movieTitle: input.movieTitle,
+        movieName: input.movieTitle,
         yearReleased: input.yearReleased,
         pathIMG: input.pathIMG,
-        getRateId: getRateId,
+        rates: getRateId,
       };
-      setDataCreate(data);
+      setDataEdit(data);
     }
   };
-  const fncCreateMovie = () => {
-    dispatch(
-      createMovie(
-        dataCreate.movieTitle,
-        dataCreate.yearReleased,
-        dataCreate.pathIMG,
-        dataCreate.getRateId
-      )
-    )
+  const FncUpdateMovie = () => {
+    dispatch(updateMovie(movieId, dataEdit))
       .then(() => {
         setSuccessAlert(true);
       })
-      .catch(() => {
-        console.log("err");
+      .catch((err) => {
+        console.log(err);
       });
   };
+
   return (
     <form className="submit-form">
       <Row>
@@ -138,6 +156,7 @@ const AddMovie = (props) => {
               control={control}
               defaultValue=""
             />
+
             {errors.movieTitle?.message && (
               <p className="text-left text-danger">
                 {errors.movieTitle?.message}
@@ -230,7 +249,7 @@ const AddMovie = (props) => {
         typeAlert={"create"}
         // id={movieIdDelete}
         nextFnc={() => {
-          fncCreateMovie();
+          FncUpdateMovie();
         }}
         closeFnc={() => {
           setConfrimAlert(false);
@@ -248,4 +267,4 @@ const AddMovie = (props) => {
   );
 };
 
-export default connect(null, { createMovie })(AddMovie);
+export default connect(null, { findOneMovie })(EditMovie);

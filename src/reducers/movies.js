@@ -1,4 +1,10 @@
-import { CREATE_MOVIE, DELETE_MOVIE, RETRIEVE_MOVIE } from "../actions/types";
+import {
+  CREATE_MOVIE,
+  DELETE_MOVIE,
+  RETRIEVE_MOVIE,
+  UPDATE_MOVIE,
+  FIND_MOVIE_BY_ID,
+} from "../actions/types";
 
 const initialState = [];
 
@@ -11,6 +17,19 @@ const movieReducer = (movies = initialState, action) => {
 
     case RETRIEVE_MOVIE:
       return payload;
+
+    case FIND_MOVIE_BY_ID:
+      return {
+        ...movies,
+        // isLoggedIn: true,
+        movie: payload.movie,
+      };
+
+    case UPDATE_MOVIE:
+      return {
+        ...movies,
+        ...payload,
+      };
 
     //   case UPDATE_TUTORIAL:
     //     return tutorials.map((tutorial) => {

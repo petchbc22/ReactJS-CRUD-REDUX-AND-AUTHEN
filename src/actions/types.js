@@ -13,7 +13,7 @@ export const CREATE_MOVIE = "CREATE_MOVIE";
 export const RETRIEVE_MOVIE = "RETRIEVE_MOVIE";
 export const UPDATE_MOVIE = "UPDATE_MOVIE";
 export const DELETE_MOVIE = "DELETE_MOVIE";
-
+export const FIND_MOVIE_BY_ID = 'FIND_MOVIE_BY_ID'
 export const RETRIEVE_RATE = "RETRIEVE_RATE";
 
 

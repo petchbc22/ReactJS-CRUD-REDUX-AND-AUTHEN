@@ -17,52 +17,54 @@ import {
 import { Edit, Trash } from "react-feather";
 import EventBus from "../common/EventBus";
 import { Alert } from "../components/Alert";
+
 const Profile = () => {
-  const { user: currentUser } = useSelector((state) => state.auth); // object;
-  const movies = useSelector((state) => state.movies); // array
+  //----------------------------------- STATE AND CONST -------------------------------------------------
+  const dispatch = useDispatch();
+  // -- state form store -- 
+  const { user: currentUser } = useSelector((state) => state.auth); 
+  const movies = useSelector((state) => state.movies); 
+  // -- state for swal
   const [successAlert, setSuccessAlert] = useState(false);
   const [confrimAlert, setConfrimAlert] = useState(false);
   const [movieIdDelete, setMovieIdDelete] = useState(0);
 
-  // const movies = useSelector(state => state.movie);
-  const dispatch = useDispatch();
+
+  //----------------------------------- USEEFFECT -------------------------------------------------
   useEffect(() => {
     UserService.getAdminBoard().then(
       (response) => {
         if (response.status === 200) {
-          dispatch(retrieveMovie());
+          dispatch(retrieveMovie()); // if authen get dataMovies
         }
       },
       (error) => {
         if (error.response && error.response.status === 401) {
-          EventBus.dispatch("logout");
+          EventBus.dispatch("logout"); // if status 401 (unauthorize) redirect to login page.
         }
       }
     );
   }, [dispatch]);
 
-  // console.log(currentUser.roles);
   if (!currentUser) {
     return <Redirect to="/login" />;
   }
+  //----------------------------------- FNC ALL -------------------------------------------------
+
   const deleteMoviebyID = () => {
     dispatch(deleteMovie(movieIdDelete))
       .then(() => {
-        console.log("ส่งไป ลบ");
         setSuccessAlert(true);
-        // freshData();
         dispatch(retrieveMovie());
       })
       .catch((res) => {
-        console.log(res);
       });
    
   };
-  console.log(movies);
   return (
     <div className="container">
       <div className="row">
-        {movies
+        {movies.length
           ? movies.map((data, index) => {
               return (
                 <div className="col-md-3" key={index}>
@@ -102,7 +104,7 @@ const Profile = () => {
                             <Button color={"warning"}>
                               <Link
                                 to={{
-                                  pathname: `/addmovie/${data.movieId}`,
+                                  pathname: `/editmovie/${data.movieId}`,
                                   state: true,
                                 }}
                                 className="text-white text-bold"
