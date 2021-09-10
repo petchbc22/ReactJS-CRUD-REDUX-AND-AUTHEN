@@ -55,10 +55,12 @@ const ListPage = () => {
   //----------------------------------- FNC ALL -------------------------------------------------
 
   const deleteMoviebyID = () => {
+    dispatch(setLoading());
     dispatch(deleteMovie(movieIdDelete))
       .then(() => {
         setSuccessAlert(true);
         dispatch(retrieveMovie());
+        dispatch(clearLoading());
       })
       .catch((res) => {});
   };
