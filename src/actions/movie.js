@@ -1,4 +1,4 @@
-import { CREATE_MOVIE, DELETE_MOVIE,RETRIEVE_MOVIE, UPDATE_MOVIE,FIND_MOVIE_BY_ID } from "./types";
+import { CREATE_MOVIE, DELETE_MOVIE,RETRIEVE_MOVIE, UPDATE_MOVIE,FIND_MOVIE_BY_ID,SET_MESSAGE } from "./types";
 import MovieDataService from "../services/movies.service";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -38,11 +38,9 @@ export const createMovie =
         return Promise.reject(err.response.status);
       }
       else{
-        console.log(err)
-        toast.error("Error Network.", {
-          position: toast.POSITION.BOTTOM_RIGHT,
-          autoClose: 3000,
-          hideProgressBar: true,
+        dispatch({
+          type: SET_MESSAGE,
+          payload: err.response.status,
         });
       }
      
@@ -101,8 +99,11 @@ export const deleteMovie = (movieId) => async (dispatch) => {
   
         return Promise.resolve();
       },
-      (error) => {
-        console.log(error)
+      (err) => {
+        dispatch({
+          type: SET_MESSAGE,
+          payload: err.response.status,
+        });
       }
     )
   };

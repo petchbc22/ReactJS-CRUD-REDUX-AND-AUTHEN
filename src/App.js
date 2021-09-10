@@ -4,39 +4,51 @@ import { Router, Switch, Route, Link } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-
 import Login from "./components/Login";
 // import Register from "./components/Register";
-import Profile from "./components/Profile";
-import AddMovie from './components/addMovie'
-import EditMovie from "./components/editMovie";
+import ListPage from "./components/ListPage";
+import AddMovie from "./components/AddMovie";
+import EditMovie from "./components/EditMovie";
 import { logout } from "./actions/auth";
 import { clearMessage } from "./actions/message";
 import { history } from "./helpers/history";
 import AuthVerify from "./common/AuthVerify";
 import EventBus from "./common/EventBus";
-
+import { Power, LogIn } from "react-feather";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Spinner from "./components/Spinner";
+import { setLoading, clearLoading } from "./actions/loading";
+toast.configure();
 const App = () => {
   // const [showModeratorBoard, setShowModeratorBoard] = useState(false);
   const [showAdminBoard, setShowAdminBoard] = useState(false);
-
+  const { loading } = useSelector((state) => state.loading);
   const { user: currentUser } = useSelector((state) => state.auth);
+  const { message } = useSelector((state) => state.message);
   const dispatch = useDispatch();
-
   useEffect(() => {
-    history.listen((location) => {
+    history.listen(() => {
       dispatch(clearMessage()); // clear message when changing location
     });
   }, [dispatch]);
 
   const logOut = useCallback(() => {
-    dispatch(logout());
+    dispatch(setLoading());
+    dispatch(logout()).then(() => {
+      dispatch(clearLoading());
+    });
   }, [dispatch]);
 
   useEffect(() => {
     if (currentUser) {
       // setShowModeratorBoard(currentUser.roles.includes("ROLE_MODERATOR"));
-      setShowAdminBoard(currentUser.roles.includes("ROLE_ADMIN"));
+      if (
+        currentUser.roles.includes("ROLE_ADMIN") ||
+        currentUser.roles.includes("ROLE_TEAMLEADER")
+      ) {
+        setShowAdminBoard(true);
+      }
     } else {
       // setShowModeratorBoard(false);
       setShowAdminBoard(false);
@@ -50,19 +62,33 @@ const App = () => {
       EventBus.remove("logout");
     };
   }, [currentUser, logOut]);
+  // console.log("message----", message);
 
+  useEffect(() => {
+    if (message === 404) {
+      toast.error(`${message} Error Network.`, {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
+    }
+  }, [message]);
+
+  // console.log("showAdminBoard---", showAdminBoard);
   return (
     <Router history={history}>
+      {loading === true ? <Spinner /> : null}
+
       <div>
         <nav className="navbar navbar-expand navbar-dark bg-dark">
           <Link to={"/"} className="navbar-brand mb-0">
             Movie CRUD
           </Link>
           <div className="navbar-nav mr-auto">
-             {showAdminBoard && (
+            {showAdminBoard && (
               <li className="nav-item">
                 <Link to={"/addmovie"} className="nav-link">
-                addmovie
+                  addmovie
                 </Link>
               </li>
             )}
@@ -72,12 +98,12 @@ const App = () => {
             <div className="navbar-nav ml-auto">
               <li className="nav-item">
                 <p className="nav-link mb-0">
-                  Welcome User : {currentUser.username}
+                  Welcome : {currentUser.username}
                 </p>
               </li>
               <li className="nav-item">
                 <a href="/login" className="nav-link" onClick={logOut}>
-                  LogOut
+                  <Power color="white" size={18} />
                 </a>
               </li>
             </div>
@@ -85,30 +111,30 @@ const App = () => {
             <div className="navbar-nav ml-auto">
               <li className="nav-item">
                 <Link to={"/login"} className="nav-link">
-                  Login
+                  <LogIn color="white" size={18} />
                 </Link>
               </li>
 
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link to={"/register"} className="nav-link">
                   Sign Up
                 </Link>
-              </li>
+              </li> */}
             </div>
           )}
         </nav>
 
         <div className="container mt-3">
           <Switch>
-            <Route exact path={["/", "/profile"]} component={Profile} />
+            <Route exact path={["/", "/listpage"]} component={ListPage} />
             <Route exact path="/login" component={Login} />
             {/* <Route exact path="/register" component={Register} /> */}
-            <Route exact path="/profile" component={Profile} />
+            <Route exact path="/listpage" component={ListPage} />
             <Route exact path="/editmovie/:movieId" component={EditMovie} />
             <Route path="/addmovie" component={AddMovie} />
           </Switch>
         </div>
-        <AuthVerify logOut={logOut}/>
+        <AuthVerify logOut={logOut} />
       </div>
     </Router>
   );

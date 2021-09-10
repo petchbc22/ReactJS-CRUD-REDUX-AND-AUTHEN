@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { imgDefaultScreen } from "../helpers/fncHelper";
 import UserService from "../services/user.service";
 import { retrieveMovie, deleteMovie } from "../actions/movie";
+import { setLoading, clearLoading } from "../actions/loading";
 import {
   Card,
   CardImg,
@@ -16,29 +17,31 @@ import {
 } from "reactstrap";
 import { Edit, Trash } from "react-feather";
 import EventBus from "../common/EventBus";
-import { Alert } from "../components/Alert";
+import { Alert } from "./Alert";
 
-const Profile = () => {
+const ListPage = () => {
   //----------------------------------- STATE AND CONST -------------------------------------------------
   const dispatch = useDispatch();
-  // -- state form store -- 
-  const { user: currentUser } = useSelector((state) => state.auth); 
-  const movies = useSelector((state) => state.movies); 
+  // -- state form store --
+  const { user: currentUser } = useSelector((state) => state.auth);
+  const movies = useSelector((state) => state.movies);
   // -- state for swal
   const [successAlert, setSuccessAlert] = useState(false);
   const [confrimAlert, setConfrimAlert] = useState(false);
   const [movieIdDelete, setMovieIdDelete] = useState(0);
 
-
   //----------------------------------- USEEFFECT -------------------------------------------------
   useEffect(() => {
-    UserService.getAdminBoard().then(
+    dispatch(setLoading());
+    UserService.getPublicContent().then(
       (response) => {
         if (response.status === 200) {
+          dispatch(clearLoading())
           dispatch(retrieveMovie()); // if authen get dataMovies
         }
       },
       (error) => {
+        console.log(error);
         if (error.response && error.response.status === 401) {
           EventBus.dispatch("logout"); // if status 401 (unauthorize) redirect to login page.
         }
@@ -57,9 +60,7 @@ const Profile = () => {
         setSuccessAlert(true);
         dispatch(retrieveMovie());
       })
-      .catch((res) => {
-      });
-   
+      .catch((res) => {});
   };
   return (
     <div className="container">
@@ -158,4 +159,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ListPage;

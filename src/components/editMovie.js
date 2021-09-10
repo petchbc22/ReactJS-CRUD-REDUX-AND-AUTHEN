@@ -2,17 +2,18 @@ import React, { useState, useEffect } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { updateMovie, findOneMovie } from "../actions/movie";
+import { setLoading, clearLoading } from "../actions/loading";
 import UserService from "../services/user.service";
 import EventBus from "../common/EventBus";
 import { retrieveRate } from "../actions/rate";
 import Select from "react-select";
-import { useForm, Controller ,useWatch } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Row, Col, Input } from "reactstrap";
 import { imgDefaultScreen } from "../helpers/fncHelper";
 import "../App.css";
-import { Alert } from "../components/Alert";
+import { Alert } from "./Alert";
 
 //----------------------------------- Yup config Validation -------------------------------------------------
 const validateSchema = yup.object().shape({
@@ -44,8 +45,8 @@ const EditMovie = (props) => {
     mode: "onSubmit",
   });
   const dispatch = useDispatch();
-    // -- state form store -- 
-  const rates = useSelector((state) => state.rates); 
+  // -- state form store --
+  const rates = useSelector((state) => state.rates);
   const { movie: currentMovie } = useSelector((state) => state.movies);
 
   const [successAlert, setSuccessAlert] = useState(false);
@@ -56,22 +57,24 @@ const EditMovie = (props) => {
   let rateId = useWatch({ control, name: "ratingMovie" }); // getValue form Select
 
   //----------------------------------- USEEFFECT -------------------------------------------------
-  // get Role 
+  // get Role
   useEffect(() => {
-    UserService.getAdminBoard().then(
-      (response) => {
+    dispatch(setLoading());
+    UserService.getAdminorTeamleaderBoard().then(
+      () => {
         dispatch(retrieveRate());
         dispatch(findOneMovie(movieId));
+        dispatch(clearLoading());
       },
       (error) => {
-        props.history.push("/profile");
+        props.history.push("/listpage");
         if (error.response && error.response.status === 401) {
           EventBus.dispatch("logout");
         }
       }
     );
   }, [props.history, dispatch, movieId]);
- // get Rate to Option Select 
+  // get Rate to Option Select
   useEffect(() => {
     let rateData = rates.map((data) => {
       return {
@@ -81,24 +84,26 @@ const EditMovie = (props) => {
     });
     setRateOptions(rateData);
   }, [movieId, rates]);
-// get Movie with params and setValue
+  // get Movie with params and setValue
   useEffect(() => {
     if (currentMovie) {
-        if(currentMovie.data){
-            setImgPreview(currentMovie.data.pathIMG ? currentMovie.data.pathIMG : null);
-            let rateMovie = currentMovie.data.rates.length ?  currentMovie.data.rates.map((data) => {
+      if (currentMovie.data) {
+        setImgPreview(
+          currentMovie.data.pathIMG ? currentMovie.data.pathIMG : null
+        );
+        let rateMovie = currentMovie.data.rates.length
+          ? currentMovie.data.rates.map((data) => {
               return {
                 value: data.rateId,
                 label: data.rate,
               };
             })
           : [];
-            setValue("movieTitle", currentMovie.data.movieName);
-            setValue("yearReleased", currentMovie.data.yearReleased);
-            setValue("pathIMG", currentMovie.data.pathIMG);
-            setValue("ratingMovie", rateMovie);
-        }
-   
+        setValue("movieTitle", currentMovie.data.movieName);
+        setValue("yearReleased", currentMovie.data.yearReleased);
+        setValue("pathIMG", currentMovie.data.pathIMG);
+        setValue("ratingMovie", rateMovie);
+      }
     }
   }, [currentMovie, setValue]);
 
@@ -260,7 +265,7 @@ const EditMovie = (props) => {
         typeAlert={"success"}
         closeFnc={() => {
           setSuccessAlert(false);
-          props.history.push("/profile");
+          props.history.push("/listpage");
         }}
       />
     </form>

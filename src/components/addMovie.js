@@ -12,7 +12,7 @@ import { Row, Col, Input } from "reactstrap";
 import { imgDefaultScreen } from "../helpers/fncHelper";
 import "../App.css";
 
-import { Alert } from "../components/Alert";
+import { Alert } from "./Alert";
 const validateSchema = yup.object().shape({
   movieTitle: yup.string("movie title is required.").required(),
   yearReleased: yup.number().required().typeError("you must specify a number."),
@@ -40,6 +40,7 @@ const AddMovie = (props) => {
     mode: "onSubmit",
   });
   const dispatch = useDispatch();
+  const currentUser  = useSelector((state) => state.auth);
   const rates = useSelector((state) => state.rates); // array
   const [successAlert, setSuccessAlert] = useState(false);
   const [confrimAlert, setConfrimAlert] = useState(false);
@@ -54,13 +55,13 @@ const AddMovie = (props) => {
   let rateId = useWatch({ control, name: "ratingMovie" });
 
   useEffect(() => {
-    UserService.getAdminBoard().then(
+    UserService.getAdminorTeamleaderBoard().then(
       (response) => {
         dispatch(retrieveRate());
       },
       (error) => {
         // alert("หน้าของ admin คุณไม่มีสิทธ์");
-        props.history.push("/profile");
+        props.history.push("/listpage");
 
         if (error.response && error.response.status === 401) {
           EventBus.dispatch("logout");
@@ -110,6 +111,7 @@ const AddMovie = (props) => {
         console.log("err");
       });
   };
+  console.log('currentUser',currentUser)
   return (
     <form className="submit-form">
       <Row>
@@ -241,7 +243,7 @@ const AddMovie = (props) => {
         typeAlert={"success"}
         closeFnc={() => {
           setSuccessAlert(false);
-          props.history.push("/profile");
+          props.history.push("/listpage");
         }}
       />
     </form>
