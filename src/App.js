@@ -19,7 +19,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Spinner from "./components/Spinner";
 import { setLoading, clearLoading } from "./actions/loading";
 import { setErrorNetwork } from "./actions/noti";
-toast.configure();
+toast.configure(); 
 
 const App = () => {
   //----------------------------------- STATE AND CONST -------------------------------------------------

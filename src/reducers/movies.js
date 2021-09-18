@@ -16,7 +16,7 @@ const movieReducer = (movies = initialState, action) => {
       return [...movies, payload];
 
     case RETRIEVE_MOVIE:
-      return payload;
+      return payload; 
 
     case FIND_MOVIE_BY_ID:
       return {

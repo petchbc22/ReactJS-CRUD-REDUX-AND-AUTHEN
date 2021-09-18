@@ -9,7 +9,7 @@ import { setErrorNetwork } from "../actions/noti";
 import {
   Card,
   CardImg,
-  CardText,
+  CardText,  
   CardBody,
   CardTitle,
   CardSubtitle,

@@ -70,7 +70,7 @@ const EditMovie = (props) => {
         props.history.push("/listpage");
         if (error.response && error.response.status === 401) {
           EventBus.dispatch("logout");
-        }
+        } 
       }
     );
   }, [props.history, dispatch, movieId]);

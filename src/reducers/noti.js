@@ -9,7 +9,7 @@ export default function (state = initialState, action) {
     case ERR_NETWORK:
       return { noti: true };
 
-    default:
+    default: 
       return state;
   }
 }

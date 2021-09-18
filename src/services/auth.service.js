@@ -14,7 +14,7 @@ const login = (username, password) => {
   return axios
     .post(API_URL + "signin", {
       username,
-      password,
+      password, 
     })
     .then((response) => {
       if (response.data.accessToken) {

@@ -64,7 +64,7 @@ const AddMovie = (props) => {
         props.history.push("/listpage");
 
         if (error.response && error.response.status === 401) {
-          EventBus.dispatch("logout");
+          EventBus.dispatch("logout"); 
         }
       }
     );

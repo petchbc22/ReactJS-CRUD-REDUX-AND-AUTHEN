@@ -10,7 +10,7 @@ import {
   const alerts = (state = initialState, action) => {
     switch (action.type) {
       case ADD_ALERT:
-        return {
+        return { 
           ...state,
           alerts: [...state.alerts, action.alert]
         };

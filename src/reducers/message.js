@@ -13,6 +13,6 @@ export default function (state = initialState, action) {
       return { message: "" };
 
     default:
-      return state;
+      return state; 
   }
 }

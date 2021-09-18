@@ -12,7 +12,7 @@ export default function (state = initialState, action) {
     case CLEAR_LOADING:
       return { loading: false };
 
-    default:
+    default: 
       return state;
   }
 }

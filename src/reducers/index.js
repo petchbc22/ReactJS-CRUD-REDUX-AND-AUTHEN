@@ -11,5 +11,5 @@ export default combineReducers({
   movies,
   rates,
   loading,
-  noti
+  noti 
 });

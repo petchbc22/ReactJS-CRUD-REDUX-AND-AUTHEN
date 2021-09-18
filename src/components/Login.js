@@ -72,7 +72,7 @@ const Login = (props) => {
         <img
           src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
           alt="profile-img"
-          className="profile-img-card"
+          className="profile-img-card" 
         />
 
         <Form onSubmit={handleLogin} ref={form}>
