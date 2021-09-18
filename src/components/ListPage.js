@@ -36,7 +36,6 @@ const ListPage = () => {
     dispatch(setLoading());
     UserService.getPublicContent().then(
       (response) => {
-        console.log("response", response);
         if (response.status === 200) {
           dispatch(clearLoading());
           dispatch(retrieveMovie());
