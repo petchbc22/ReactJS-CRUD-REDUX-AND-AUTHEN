@@ -10,7 +10,7 @@ import {
   Card,
   CardImg,
   CardText,  
-  CardBody,
+  CardBody, 
   CardTitle,
   CardSubtitle,
   Button,

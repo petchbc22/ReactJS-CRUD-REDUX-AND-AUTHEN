@@ -20,7 +20,7 @@ import Spinner from "./components/Spinner";
 import { setLoading, clearLoading } from "./actions/loading";
 import { setErrorNetwork } from "./actions/noti";
 toast.configure(); 
-
+ 
 const App = () => {
   //----------------------------------- STATE AND CONST -------------------------------------------------
   // global state 

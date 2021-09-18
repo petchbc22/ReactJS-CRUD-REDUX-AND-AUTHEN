@@ -12,4 +12,4 @@ export default combineReducers({
   rates,
   loading,
   noti 
-});
+}); 
