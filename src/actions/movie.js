@@ -34,6 +34,7 @@ export const createMovie =
         payload: res.data,
       });
     } catch (err) {
+      console.log(err)
       if(err.response.status === 401){
         return Promise.reject(err.response.status);
       }

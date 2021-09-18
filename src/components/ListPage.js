@@ -5,6 +5,7 @@ import { imgDefaultScreen } from "../helpers/fncHelper";
 import UserService from "../services/user.service";
 import { retrieveMovie, deleteMovie } from "../actions/movie";
 import { setLoading, clearLoading } from "../actions/loading";
+import { setErrorNetwork } from "../actions/noti";
 import {
   Card,
   CardImg,
@@ -35,19 +36,31 @@ const ListPage = () => {
     dispatch(setLoading());
     UserService.getPublicContent().then(
       (response) => {
+        console.log("response", response);
         if (response.status === 200) {
-          dispatch(clearLoading())
-          dispatch(retrieveMovie()); // if authen get dataMovies
+          dispatch(clearLoading());
+          dispatch(retrieveMovie());
         }
       },
       (error) => {
-        console.log(error);
         if (error.response && error.response.status === 401) {
           EventBus.dispatch("logout"); // if status 401 (unauthorize) redirect to login page.
+        } else {
+          console.log("server down");
+          dispatch(clearLoading());
+          dispatch(setErrorNetwork());
+          // toast.error(`${error}`, {
+          //   position: toast.POSITION.BOTTOM_RIGHT,
+          //   autoClose: 3000,
+          //   hideProgressBar: true,
+          // });
         }
       }
     );
   }, [dispatch]);
+
+  // if 
+
 
   if (!currentUser) {
     return <Redirect to="/login" />;

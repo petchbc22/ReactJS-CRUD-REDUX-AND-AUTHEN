@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Router, Switch, Route, Link } from "react-router-dom";
-
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import Login from "./components/Login";
@@ -19,30 +18,39 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Spinner from "./components/Spinner";
 import { setLoading, clearLoading } from "./actions/loading";
+import { setErrorNetwork } from "./actions/noti";
 toast.configure();
+
 const App = () => {
-  // const [showModeratorBoard, setShowModeratorBoard] = useState(false);
-  const [showAdminBoard, setShowAdminBoard] = useState(false);
+  //----------------------------------- STATE AND CONST -------------------------------------------------
+  // global state 
   const { loading } = useSelector((state) => state.loading);
   const { user: currentUser } = useSelector((state) => state.auth);
   const { message } = useSelector((state) => state.message);
+  const { noti } = useSelector((state) => state.noti);
   const dispatch = useDispatch();
+  // state
+  const [showAdminBoard, setShowAdminBoard] = useState(false);
+  //----------------------------------- FNC ALL -------------------------------------------------
+  const logOut = useCallback(() => {
+    dispatch(setLoading());
+    dispatch(logout());
+    dispatch(clearLoading());
+  }, [dispatch]);
+  //----------------------------------- USEEFFECT -------------------------------------------------
+  //clear message
   useEffect(() => {
     history.listen(() => {
       dispatch(clearMessage()); // clear message when changing location
     });
-  }, [dispatch]);
+    if (message === 404) {
+      dispatch(setErrorNetwork());
+    }
+  }, [dispatch,message]);
 
-  const logOut = useCallback(() => {
-    dispatch(setLoading());
-    dispatch(logout()).then(() => {
-      dispatch(clearLoading());
-    });
-  }, [dispatch]);
-
+// if currentUser is true (login)
   useEffect(() => {
     if (currentUser) {
-      // setShowModeratorBoard(currentUser.roles.includes("ROLE_MODERATOR"));
       if (
         currentUser.roles.includes("ROLE_ADMIN") ||
         currentUser.roles.includes("ROLE_TEAMLEADER")
@@ -50,7 +58,6 @@ const App = () => {
         setShowAdminBoard(true);
       }
     } else {
-      // setShowModeratorBoard(false);
       setShowAdminBoard(false);
     }
 
@@ -62,23 +69,22 @@ const App = () => {
       EventBus.remove("logout");
     };
   }, [currentUser, logOut]);
-  // console.log("message----", message);
 
+  // if global state noti is true render toast noti.
   useEffect(() => {
-    if (message === 404) {
-      toast.error(`${message} Error Network.`, {
+    if (noti === true) {
+      toast.error(`Network Error.`, {
         position: toast.POSITION.BOTTOM_RIGHT,
         autoClose: 3000,
         hideProgressBar: true,
       });
     }
-  }, [message]);
+  }, [noti]);
 
-  // console.log("showAdminBoard---", showAdminBoard);
   return (
     <Router history={history}>
+      {/* for global state === setloading */}
       {loading === true ? <Spinner /> : null}
-
       <div>
         <nav className="navbar navbar-expand navbar-dark bg-dark">
           <Link to={"/"} className="navbar-brand mb-0">
