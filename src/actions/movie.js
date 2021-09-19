@@ -108,6 +108,19 @@ export const deleteMovie = (movieId) => async (dispatch) => {
       }
     )
   };
+
+  export const findMoviesName = (movieName) => async (dispatch) => {
+    try {
+      const res = await MovieDataService.searchMovie(movieName);
+  
+      dispatch({
+        type: RETRIEVE_MOVIE,
+        payload: res.data,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   
  
   

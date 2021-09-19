@@ -52,7 +52,7 @@ const Login = (props) => {
       dispatch(login(username, password))
         .then(() => {
           props.history.push("/listpage");
-          window.location.reload();
+          // window.location.reload();
         })
         .catch(() => {
           setLoading(false);

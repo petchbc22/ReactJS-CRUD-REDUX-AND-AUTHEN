@@ -7,6 +7,9 @@ class MovieDataService {
  getMovie() {
   return axios.get(API_URL + "movies", { headers: authHeader() });
 };
+ searchMovie(movieName){
+  return axios.get(API_URL + `movies?movieName=${movieName}`, { headers: authHeader() });
+ }
 findMovieByid(movieId) {
   return axios.get(`${API_URL}movies/${movieId}`, { headers: authHeader() });
 };

@@ -21,7 +21,6 @@ const movieReducer = (movies = initialState, action) => {
     case FIND_MOVIE_BY_ID:
       return {
         ...movies,
-        // isLoggedIn: true,
         movie: payload.movie,
       };
 
@@ -31,23 +30,8 @@ const movieReducer = (movies = initialState, action) => {
         ...payload,
       };
 
-    //   case UPDATE_TUTORIAL:
-    //     return tutorials.map((tutorial) => {
-    //       if (tutorial.id === payload.id) {
-    //         return {
-    //           ...tutorial,
-    //           ...payload,
-    //         };
-    //       } else {
-    //         return tutorial;
-    //       }
-    //     });
-
     case DELETE_MOVIE:
       return movies.filter(({ movieId }) => movieId !== payload.movieId);
-
-    //   case DELETE_ALL_TUTORIALS:
-    //     return [];
 
     default:
       return movies;
