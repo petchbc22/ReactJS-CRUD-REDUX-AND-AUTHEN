@@ -40,7 +40,6 @@ const AddMovie = (props) => {
     mode: "onSubmit",
   });
   const dispatch = useDispatch();
-  const currentUser  = useSelector((state) => state.auth);
   const rates = useSelector((state) => state.rates); // array
   const [successAlert, setSuccessAlert] = useState(false);
   const [confrimAlert, setConfrimAlert] = useState(false);
@@ -111,7 +110,6 @@ const AddMovie = (props) => {
         console.log("err");
       });
   };
-  console.log('currentUser',currentUser)
   return (
     <form className="submit-form">
       <Row>
