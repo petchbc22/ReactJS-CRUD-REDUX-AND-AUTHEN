@@ -58,7 +58,6 @@ const ListPage = () => {
     );
   }, [dispatch]);
 
-  // if
 
   if (!currentUser) {
     return <Redirect to="/login" />;
@@ -80,7 +79,6 @@ const ListPage = () => {
     dispatch(setLoading());
     dispatch(findMoviesName(input.movieName))
       .then((data) => {
-        console.log(data);
         dispatch(clearLoading());
       })
       .catch((res) => {

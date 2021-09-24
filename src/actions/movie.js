@@ -1,9 +1,6 @@
 import { CREATE_MOVIE, DELETE_MOVIE,RETRIEVE_MOVIE, UPDATE_MOVIE,FIND_MOVIE_BY_ID,SET_MESSAGE } from "./types";
 import MovieDataService from "../services/movies.service";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import '../App.css'
-toast.configure()
 export const createMovie =
   (movieName, yearReleased, pathIMG,rates) => async (dispatch) => {
     try {
@@ -34,7 +31,6 @@ export const createMovie =
         payload: res.data,
       });
     } catch (err) {
-      console.log(err)
       if(err.response.status === 401){
         return Promise.reject(err.response.status);
       }
@@ -76,19 +72,6 @@ export const deleteMovie = (movieId) => async (dispatch) => {
     console.log(err);
   }
 };
-
-  // export const aa = (MovieId) => async (dispatch) => {
-  //   try {
-  //     const res = await MovieDataService.findMovieByid(MovieId);
-
-  //     dispatch({
-  //       type: FIND_MOVIE_BY_ID,
-  //       payload: res.data,
-  //     });
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
 
   export const findOneMovie = (MovieId) => (dispatch) => {
     return MovieDataService.findMovieByid(MovieId).then(

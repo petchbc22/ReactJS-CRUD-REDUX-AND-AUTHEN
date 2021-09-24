@@ -43,7 +43,7 @@ export const Alert = (props) => {
         componentTemp = (
           <div>
             <SweetAlert
-              title="ยืนยันการแก้ไข?"
+              title="Comfirmation Update ?"
               show={props.showAlert}
               showCancel
               custom
@@ -53,8 +53,8 @@ export const Alert = (props) => {
                 </div>
               }
               reverseButtons
-              confirmBtnText="ยืนยัน"
-              cancelBtnText="ยกเลิก"
+              confirmBtnText="Comfirm"
+              cancelBtnText="Cancel"
               confirmBtnCssClass="custombtinmodal"
               cancelBtnCssClass="custombtCancel"
               onConfirm={() => {

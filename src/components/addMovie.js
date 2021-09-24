@@ -11,8 +11,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Row, Col, Input } from "reactstrap";
 import { imgDefaultScreen } from "../helpers/fncHelper";
 import "../App.css";
-
 import { Alert } from "./Alert";
+// validateSchema for Yup
 const validateSchema = yup.object().shape({
   movieTitle: yup.string("movie title is required.").required(),
   yearReleased: yup.number().required().typeError("you must specify a number."),

@@ -24,3 +24,5 @@ export const SET_LOADING = 'SET_LOADING';
 export const CLEAR_LOADING = 'CLEAR_LOADING';
 
 export const ERR_NETWORK = 'ERR_NETWORK';  
+
+export const UPDATE_PASSWORD = 'UPDATE_PASSWORD';

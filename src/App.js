@@ -3,6 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { Router, Switch, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+import {
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
 import Login from "./components/Login";
 // import Register from "./components/Register";
 import ListPage from "./components/ListPage";
@@ -13,17 +19,18 @@ import { clearMessage } from "./actions/message";
 import { history } from "./helpers/history";
 import AuthVerify from "./common/AuthVerify";
 import EventBus from "./common/EventBus";
-import { Power, LogIn } from "react-feather";
+import { Power, LogIn, Settings, User } from "react-feather";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Spinner from "./components/Spinner";
 import { setLoading, clearLoading } from "./actions/loading";
 import { setErrorNetwork } from "./actions/noti";
-toast.configure(); 
- 
+import Profile from "./components/Profile";
+toast.configure();
+
 const App = () => {
   //----------------------------------- STATE AND CONST -------------------------------------------------
-  // global state 
+  // global state
   const { loading } = useSelector((state) => state.loading);
   const { user: currentUser } = useSelector((state) => state.auth);
   const { message } = useSelector((state) => state.message);
@@ -46,9 +53,9 @@ const App = () => {
     if (message === 404) {
       dispatch(setErrorNetwork());
     }
-  }, [dispatch,message]);
+  }, [dispatch, message]);
 
-// if currentUser is true (login)
+  // if currentUser is true (login)
   useEffect(() => {
     if (currentUser) {
       if (
@@ -107,11 +114,39 @@ const App = () => {
                   Welcome : {currentUser.username}
                 </p>
               </li>
-              <li className="nav-item">
-                <a href="/login" className="nav-link" onClick={logOut}>
-                  <Power color="white" size={18} />
-                </a>
-              </li>
+              <UncontrolledDropdown nav inNavbar>
+                <DropdownToggle nav caret>
+                  <Settings color="white" size={18} />
+                </DropdownToggle>
+                <DropdownMenu right>
+                  <DropdownItem>
+                    <Link to={"/profile"} className="nav-link">
+                      <div className="d-flex">
+                        <User color="black" size={18} />
+                        <p className="text-dark mb-0 pl-1">Profile</p>
+                      </div>
+                    </Link>
+                  </DropdownItem>
+
+                  <DropdownItem divider />
+                  <DropdownItem>
+                    <a href="/login" className="nav-link p-0" onClick={logOut}>
+                      <div className="d-flex">
+                        <Power color="black" size={18} />
+                        <p className="text-dark mb-0 pl-1">Logout</p>
+                      </div>
+                    </a>
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+
+              {/* <a href="/login" className="nav-link" onClick={logOut}>
+                  <Settings color="white" size={18} />
+                </a> */}
+
+              {/* <li className="nav-item">
+               
+              </li> */}
             </div>
           ) : (
             <div className="navbar-nav ml-auto">
@@ -137,7 +172,8 @@ const App = () => {
             {/* <Route exact path="/register" component={Register} /> */}
             <Route exact path="/listpage" component={ListPage} />
             <Route exact path="/editmovie/:movieId" component={EditMovie} />
-            <Route path="/addmovie" component={AddMovie} />
+            <Route exact path="/addmovie" component={AddMovie} />
+            <Route exact path="/profile" component={Profile}/>
           </Switch>
         </div>
         <AuthVerify logOut={logOut} />

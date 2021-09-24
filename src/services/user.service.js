@@ -23,10 +23,15 @@ const getAdminorTeamleaderBoard = () => {
   return axios.get(API_URL + "adminandteamleader", { headers: authHeader() });
 };
 
+const updatePassword = (data) => {
+  return axios.post("http://localhost:8080/updateuser", data, { headers: authHeader() });
+};
+
 export default {
   getPublicContent,
   getUserBoard,
   getModeratorBoard,
   getAdminBoard,
-  getAdminorTeamleaderBoard
+  getAdminorTeamleaderBoard,
+  updatePassword
 };
