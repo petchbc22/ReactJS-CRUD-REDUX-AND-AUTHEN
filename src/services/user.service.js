@@ -1,7 +1,7 @@
 import axios from "axios";
 import authHeader from "./auth-header";
 
-const API_URL = "http://localhost:8080/api/test/";
+const API_URL = "https://express-movie-backend.herokuapp.com/api/test/";
 
 const getPublicContent = () => {
   return axios.get(API_URL + "all", { headers: authHeader() });
@@ -24,7 +24,7 @@ const getAdminorTeamleaderBoard = () => {
 };
 
 const updatePassword = (data) => {
-  return axios.post("http://localhost:8080/updateuser", data, { headers: authHeader() });
+  return axios.post("https://express-movie-backend.herokuapp.com/updateuser", data, { headers: authHeader() });
 };
 
 export default {

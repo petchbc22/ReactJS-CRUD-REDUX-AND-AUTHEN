@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/";
+// const API_URL = "http://localhost:8080/";
+const API_URL = "https://express-movie-backend.herokuapp.com/"
 
 const register = (username, email, password) => {
   return axios.post(API_URL + "signup", {
