@@ -1,6 +1,9 @@
 {
   "name": "react-redux-hooks-jwt-auth",
   "version": "0.1.0",
+  "engines": {
+    "node": "16.5.0"
+  },
   "license": "MIT",
   "private": true,
   "dependencies": {
